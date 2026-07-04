@@ -1205,6 +1205,7 @@
         align-items: center;
         gap: -2rem;
         perspective: 1200px;
+        flex-wrap: wrap;
       }
       .phones .phone-frame {
         transition: transform 0.4s var(--ease);
@@ -1219,6 +1220,72 @@
       }
       .phones:hover .phone-frame {
         transform: rotate(0) translateY(0);
+      }
+
+      /* ===== SLIDE CONTROLS (FIXED POSITION) ===== */
+      .slide-controls {
+        position: fixed;
+        bottom: 1.5rem;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        backdrop-filter: blur(12px);
+        padding: 0.75rem 1.25rem;
+        border-radius: 50px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      }
+      .slide-controls button {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 2px solid var(--pink);
+        background: transparent;
+        color: var(--pink);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s var(--ease);
+        font-size: 1rem;
+      }
+      .slide-controls button:hover {
+        background: var(--pink);
+        color: #fff;
+        transform: scale(1.1);
+      }
+      .slide-controls button:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        transform: none;
+      }
+      .slide-number {
+        font-weight: 900;
+        font-size: 1rem;
+        min-width: 60px;
+        text-align: center;
+        color: var(--text);
+      }
+      .slide-number span {
+        color: var(--pink);
+      }
+
+      /* ===== RESPONSIVE SMART SCHEDULING ===== */
+      @media (max-width: 1024px) {
+        .smart-sched-images {
+          grid-template-columns: 1fr !important;
+          gap: 1rem !important;
+        }
+        .smart-sched-images .browser {
+          max-height: 200px;
+        }
+        .smart-sched-images img {
+          object-fit: contain;
+        }
       }
     </style>
   </head>
@@ -1913,7 +1980,7 @@
                 >
               </div>
             </div>
-            <div class="anim space-y-4">
+            <div class="anim smart-sched-images space-y-4">
               <div class="browser">
                 <div class="browser-bar">
                   <i style="background: #ff5f56"></i
