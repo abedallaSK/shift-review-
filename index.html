@@ -1205,6 +1205,7 @@
         align-items: center;
         gap: -2rem;
         perspective: 1200px;
+        flex-wrap: wrap;
       }
       .phones .phone-frame {
         transition: transform 0.4s var(--ease);
@@ -1219,6 +1220,83 @@
       }
       .phones:hover .phone-frame {
         transform: rotate(0) translateY(0);
+      }
+
+      /* ===== SLIDE CONTROLS (FIXED POSITION) ===== */
+      .slide-controls {
+        position: fixed;
+        bottom: 1.5rem;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        backdrop-filter: blur(12px);
+        padding: 0.75rem 1.25rem;
+        border-radius: 50px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      }
+      .slide-controls button {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 2px solid var(--pink);
+        background: transparent;
+        color: var(--pink);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s var(--ease);
+        font-size: 1rem;
+      }
+      .slide-controls button:hover {
+        background: var(--pink);
+        color: #fff;
+        transform: scale(1.1);
+      }
+      .slide-controls button:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        transform: none;
+      }
+      .slide-number {
+        font-weight: 900;
+        font-size: 1rem;
+        min-width: 60px;
+        text-align: center;
+        color: var(--text);
+      }
+      .slide-number span {
+        color: var(--pink);
+      }
+
+      /* ===== RESPONSIVE SMART SCHEDULING ===== */
+      @media (max-width: 1024px) {
+        .smart-sched-images {
+          grid-template-columns: 1fr !important;
+          gap: 0.75rem !important;
+        }
+        .smart-sched-images .browser {
+          max-height: 180px;
+          overflow: hidden;
+        }
+        .smart-sched-images img {
+          object-fit: contain;
+          width: 100%;
+          height: auto;
+        }
+      }
+      @media (max-width: 640px) {
+        .smart-sched-images .browser {
+          max-height: 160px;
+        }
+        .smart-sched-images img {
+          object-fit: contain;
+        }
       }
     </style>
   </head>
@@ -1426,7 +1504,7 @@
             <div class="anim order-2 lg:order-1">
               <div class="grid grid-cols-2 gap-4 mb-4">
                 <div class="glass-card text-center p-6">
-                  <div class="stat-number" data-target="50" data-suffix="+">
+                  <div class="stat-number" data-target="10" data-suffix="+">
                     0
                   </div>
                   <div
@@ -1526,11 +1604,11 @@
                   <div
                     class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center font-bold"
                   >
-                    ع
+                    ش
                   </div>
                   <div class="flex-1">
-                    <div class="font-bold" data-i18n="story_me">
-                      عبدالله (أنا)
+                    <div class="font-bold" id="storyChatHeaderName" data-i18n="story_me">
+                      شادي (المسؤول)
                     </div>
                     <div
                       class="text-xs opacity-80"
@@ -1913,7 +1991,7 @@
                 >
               </div>
             </div>
-            <div class="anim space-y-4">
+            <div class="anim smart-sched-images space-y-4">
               <div class="browser">
                 <div class="browser-bar">
                   <i style="background: #ff5f56"></i
@@ -3086,57 +3164,60 @@
         ],
       };
       /* dir: out = me sending, in = incoming */
-      const STORY_MSGS = {
+            const STORY_MSGS = {
         ar: [
-          {
-            d: "out",
-            t: "مرحبا شادي، بتفحصلي إذا في حدا يبدلني الأحد؟ بعطي 8-17 وآخذ 15-24",
-          },
+          // Chat 1: With Shady (Manager)
+          { d: "out", t: "مرحبا شادي، بتفحصلي إذا في حدا يبدلني الأحد؟ بعطي 8-17 وآخذ 15-24" },
           { d: "in", t: "تمام، بنزّلها بالجروب 👍" },
-          { d: "in", t: "أنا محمد — بقدر أبدل معك 🙌" },
+          // Close chat 1, open chat 2
+          { d: "newchat", name: "مجموعة الورديات", count: "120 عضو" },
+          // Chat 2: Group chat - Yousef responds
+          { d: "in", t: "أنا يوسف — بقدر أبدل معك 🙌" },
           { d: "out", t: "ممتاز! اتفقنا ✅" },
-          { d: "out", t: "شادي، بدّلت مع محمد" },
+          // Close chat 2, open chat 3
+          { d: "newchat", name: "رقم غير معروف", count: "" },
+          // Chat 3: Unknown number
           { d: "in", t: "مرحبا عبدالله، بتحب تبدّل الأحد؟" },
-          { d: "out", t: "الصراحة بدّلت مع محمد 🙂" },
-          {
-            d: "call",
-            t: "☎️ الأحد 08:00 — مسؤول الوردية: وينك؟! ليش ما إجيت؟",
-          },
-          { d: "out", t: "أنا بدّلت مع محمد! بشتغل من الساعة 3 😳" },
+          { d: "out", t: "الصراحة بدّلت مع يوسف 🙂" },
+          // Close chat 3, open call
+          { d: "call", t: "☎️ الأحد 08:00 — مسؤول الوردية: وينك؟! ليش ما إجيت؟" },
+          { d: "out", t: "أنا بدّلت مع يوسف! بشتغل من الساعة 3 😳" },
         ],
         he: [
-          {
-            d: "out",
-            t: "היי שאדי, תבדוק אם מישהו יכול להחליף אותי ביום ראשון? נותן 8-17 ולוקח 15-24",
-          },
+          // Chat 1: With Shady (Manager)
+          { d: "out", t: "היי שאדי, תבדוק אם מישהו יכול להחליף אותי ביום ראשון? נותן 8-17 ולוקח 15-24" },
           { d: "in", t: "סבבה, מעלה לקבוצה 👍" },
-          { d: "in", t: "אני מוחמד — אני יכול להחליף איתך 🙌" },
+          // Close chat 1, open chat 2
+          { d: "newchat", name: "קבוצת משמרות", count: "120 חברים" },
+          // Chat 2: Group chat - Yousef responds
+          { d: "in", t: "אני יוסף — אני יכול להחליף איתך 🙌" },
           { d: "out", t: "מעולה! סגור ✅" },
-          { d: "out", t: "שאדי, החלפתי עם מוחמד" },
+          // Close chat 2, open chat 3
+          { d: "newchat", name: "מספר לא מוכר", count: "" },
+          // Chat 3: Unknown number
           { d: "in", t: "היי עבדאללה, רוצה להחליף ביום ראשון?" },
-          { d: "out", t: "בעצם כבר החלפתי עם מוחמד 🙂" },
-          {
-            d: "call",
-            t: "☎️ ראשון 08:00 — אחראי המשמרת: איפה אתה?! למה לא הגעת?",
-          },
-          { d: "out", t: "החלפתי עם מוחמד! אני עובד מ־3 😳" },
+          { d: "out", t: "בעצם כבר החלפתי עם יוסף 🙂" },
+          // Close chat 3, open call
+          { d: "call", t: "☎️ ראשון 08:00 — אחראי המשמרת: איפה אתה?! למה לא הגעת?" },
+          { d: "out", t: "החלפתי עם יוסף! אני עובד מ־3 😳" },
         ],
         en: [
-          {
-            d: "out",
-            t: "Hi Shady, can you check if someone can cover my Sunday? I give 8-17 and take 15-24",
-          },
+          // Chat 1: With Shady (Manager)
+          { d: "out", t: "Hi Shady, can you check if someone can cover my Sunday? I give 8-17 and take 15-24" },
           { d: "in", t: "Sure, posting it to the group 👍" },
-          { d: "in", t: "I’m Muhammad — I can swap with you 🙌" },
+          // Close chat 1, open chat 2
+          { d: "newchat", name: "Shifts Group", count: "120 members" },
+          // Chat 2: Group chat - Yousef responds
+          { d: "in", t: "I'm Yousef — I can swap with you 🙌" },
           { d: "out", t: "Great! Deal ✅" },
-          { d: "out", t: "Shady, I swapped with Muhammad" },
+          // Close chat 2, open chat 3
+          { d: "newchat", name: "Unknown Number", count: "" },
+          // Chat 3: Unknown number
           { d: "in", t: "Hi Abdullah, want to swap this Sunday?" },
-          { d: "out", t: "Actually I already swapped with Muhammad 🙂" },
-          {
-            d: "call",
-            t: "☎️ Sunday 08:00 — shift manager: Where are you?! Why didn’t you come?",
-          },
-          { d: "out", t: "I swapped with Muhammad! I work from 3 😳" },
+          { d: "out", t: "Actually I already swapped with Yousef 🙂" },
+          // Close chat 3, open call
+          { d: "call", t: "☎️ Sunday 08:00 — shift manager: Where are you?! Why didn't you come?" },
+          { d: "out", t: "I swapped with Yousef! I work from 3 😳" },
         ],
       };
 
@@ -4500,14 +4581,36 @@
       }
       function playStory() {
         const chat = document.getElementById("storyChat");
+        const headerName = document.querySelector("#storyChatHeaderName");
+        const headerStatus = document.getElementById("storyStatus");
         if (!chat) return;
         clearTimers(storyTimers);
         chat.innerHTML = "";
+        
+        // Default header (Abdullah chat with Shady)
+        let currentHeaderName = "شادي (المسؤول)";
+        let currentHeaderStatus = "متصل الآن";
+        if (currentLang === "he") {
+          currentHeaderName = "שאדי (אחראי)";
+          currentHeaderStatus = "מחובר עכשיו";
+        } else if (currentLang === "en") {
+          currentHeaderName = "Shady (Manager)";
+          currentHeaderStatus = "online";
+        }
+        
         const msgs = STORY_MSGS[currentLang] || STORY_MSGS.ar;
         let delay = 400;
         msgs.forEach((m) => {
           storyTimers.push(
             setTimeout(() => {
+              if (m.d === "newchat") {
+                // Update header to show new chat
+                if (headerName) headerName.textContent = m.name;
+                if (headerStatus && m.count) headerStatus.textContent = m.count;
+                else if (headerStatus) headerStatus.textContent = "";
+                return;
+              }
+              
               const el = document.createElement("div");
               el.className =
                 "wa-msg " +
@@ -4524,7 +4627,7 @@
               else soundReceive();
             }, delay),
           );
-          delay += m.d === "call" ? 1600 : 1050;
+          delay += m.d === "call" ? 1600 : m.d === "newchat" ? 800 : 1050;
         });
       }
 
