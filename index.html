@@ -42,7 +42,10 @@
       body {
         font-family: "Tajawal", sans-serif;
         overflow: hidden;
-        height: 100vh;
+        position: relative;
+        height: calc(var(--vh, 1vh) * 100);
+        height: 100dvh;
+        -webkit-tap-highlight-color: transparent;
         transition:
           background 0.4s var(--ease),
           color 0.4s var(--ease);
@@ -83,17 +86,23 @@
       /* DECK / SLIDES */
       .deck {
         position: relative;
-        width: 100vw;
-        height: 100vh;
+        width: 100%;
+        height: calc(var(--vh, 1vh) * 100);
+        height: 100dvh;
       }
       .slide {
         position: fixed;
-        inset: 0;
+        top: 0;
+        inset-inline: 0;
+        bottom: auto;
+        height: calc(var(--vh, 1vh) * 100);
+        height: 100dvh;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 3.5rem 2rem 5.5rem;
+        padding: 3.5rem 2rem 6rem;
         overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
         opacity: 0;
         visibility: hidden;
         pointer-events: none;
@@ -250,6 +259,21 @@
       .logo-com {
         color: var(--text);
       }
+      /* brand swoosh (matches the babcom logo mark) */
+      .swoosh {
+        display: block;
+        margin: 0.1em auto 0;
+        width: 62%;
+        max-width: 240px;
+        height: auto;
+        overflow: visible;
+      }
+      .swoosh path {
+        stroke: var(--pink);
+        fill: none;
+        stroke-width: 10;
+        stroke-linecap: round;
+      }
       .gradient-text {
         background: linear-gradient(135deg, #d946a6, #e879c0 50%, #d946a6);
         -webkit-background-clip: text;
@@ -284,6 +308,27 @@
         background: var(--pink);
         color: #fff;
         transform: translateY(-3px);
+      }
+      /* iOS "in development" chip (non-clickable) */
+      .btn-ios {
+        background: transparent;
+        border: 2px dashed var(--border);
+        color: var(--text-faint);
+        cursor: default;
+        position: relative;
+      }
+      .btn-ios::after {
+        content: "SOON";
+        position: absolute;
+        top: -9px;
+        inset-inline-end: 10px;
+        font-size: 0.6rem;
+        font-weight: 900;
+        letter-spacing: 0.05em;
+        padding: 1px 7px;
+        border-radius: 50px;
+        background: var(--pink);
+        color: #fff;
       }
 
       /* BADGES */
@@ -786,8 +831,8 @@
 
       /* CONTROL DOCK (bottom, PowerPoint-style) */
       .dock {
-        position: fixed;
-        bottom: 1rem;
+        position: absolute;
+        bottom: calc(0.85rem + env(safe-area-inset-bottom, 0px));
         z-index: 1200;
         display: flex;
         align-items: center;
@@ -853,11 +898,11 @@
         border-color: var(--pink);
       }
       .progress-bottom {
-        position: fixed;
+        position: absolute;
         bottom: 0;
         inset-inline-start: 0;
         height: 3px;
-        background: linear-gradient(90deg, #d946a6, #e879c0);
+        background: linear-gradient(90deg, var(--pink), var(--pink-light));
         z-index: 1300;
         width: 0%;
         transition: width 0.4s var(--ease);
@@ -881,7 +926,7 @@
 
       @media (max-width: 768px) {
         .slide {
-          padding: 2.5rem 1rem 5rem;
+          padding: 2.25rem 0.9rem 5.5rem;
         }
         .stat-number {
           font-size: 2.2rem;
@@ -889,11 +934,50 @@
         .opt-grid {
           grid-template-columns: 1fr;
         }
+        /* tools bottom-left, nav bottom-right → never overlap */
         .dock-tools {
-          inset-inline-start: 0.5rem;
+          inset-inline-start: 0.6rem;
+          gap: 0.35rem;
+        }
+        .dock-nav {
+          inset-inline-start: auto;
+          inset-inline-end: 0.6rem;
+          transform: none;
         }
         .dock-tools .lang-chip {
           display: none;
+        }
+        /* bigger, easier-to-tap controls */
+        .icon-btn.sm {
+          width: 42px;
+          height: 42px;
+          border-radius: 12px;
+          font-size: 1rem;
+        }
+        .nav-count {
+          font-size: 0.95rem;
+          min-width: 48px;
+        }
+        /* headings fit narrow screens */
+        .slide h1 {
+          font-size: 3.1rem;
+          line-height: 1.05;
+        }
+        .slide h2 {
+          font-size: 2rem;
+          line-height: 1.15;
+        }
+        /* phones fit side by side */
+        .phones .phone-frame {
+          max-width: 42vw;
+        }
+        .phones .phone-frame:last-child {
+          margin-inline-start: -1.4rem;
+        }
+        /* roomier tap rows */
+        .role-tab {
+          padding: 0.55rem 0.9rem;
+          font-size: 0.9rem;
         }
       }
       /* ===== DYNAMIC ACCENT (accent follows --pink live) ===== */
@@ -985,11 +1069,14 @@
           transform: translate(-30px, 40px) scale(0.95);
         }
       }
-      .deck,
-      .dock,
-      .progress-bottom {
-        position: relative;
+      .deck {
         z-index: 5;
+      }
+      .dock {
+        z-index: 1200;
+      }
+      .progress-bottom {
+        z-index: 1300;
       }
 
       /* ===== POINT ROWS ===== */
@@ -1298,6 +1385,121 @@
           object-fit: contain;
         }
       }
+
+      /* ================= THEME POLISH: accent-aware shadows & backgrounds ================= */
+      :root {
+        --glow: color-mix(in srgb, var(--pink) 38%, transparent);
+        --glow-soft: color-mix(in srgb, var(--pink) 18%, transparent);
+      }
+      .dark-theme {
+        --border: color-mix(in srgb, var(--pink) 20%, transparent);
+        --elev: 0 22px 48px rgba(0, 0, 0, 0.55);
+        --elev-sm: 0 10px 26px rgba(0, 0, 0, 0.42);
+      }
+      .light-theme {
+        --border: color-mix(in srgb, var(--pink) 24%, transparent);
+        --elev: 0 18px 42px rgba(24, 24, 48, 0.13);
+        --elev-sm: 0 8px 22px rgba(24, 24, 48, 0.08);
+      }
+      /* backgrounds follow the chosen accent, kept subtle */
+      .slide::before {
+        background:
+          radial-gradient(
+            ellipse at 12% 0%,
+            color-mix(in srgb, var(--pink) 11%, transparent) 0%,
+            transparent 46%
+          ),
+          radial-gradient(
+            ellipse at 88% 100%,
+            color-mix(in srgb, var(--pink) 6%, transparent) 0%,
+            transparent 46%
+          );
+      }
+      #slide0::before {
+        background:
+          radial-gradient(
+            ellipse at 20% 18%,
+            color-mix(in srgb, var(--pink) 16%, transparent),
+            transparent 46%
+          ),
+          radial-gradient(
+            ellipse at 82% 84%,
+            color-mix(in srgb, var(--pink-dark) 14%, transparent),
+            transparent 46%
+          );
+      }
+      .light-theme .orb {
+        opacity: 0.16;
+      }
+      .dark-theme .orb {
+        opacity: 0.3;
+      }
+      /* elevation shadows — neutral depth, theme-aware */
+      .glass-card {
+        box-shadow: none;
+      }
+      .light-theme .glass-card {
+        box-shadow: var(--elev-sm);
+      }
+      .glass-card:hover {
+        box-shadow:
+          var(--elev),
+          0 0 0 1px var(--glow-soft);
+        border-color: var(--pink);
+      }
+      .role-card:hover {
+        box-shadow:
+          var(--elev),
+          0 0 0 1px var(--glow-soft);
+      }
+      .shift-card:hover {
+        box-shadow:
+          var(--elev-sm),
+          0 0 0 1px var(--glow-soft);
+      }
+      .wa,
+      .browser,
+      .phone-frame,
+      .modal-content,
+      .toast {
+        box-shadow: var(--elev);
+      }
+      .notif {
+        box-shadow: var(--elev-sm);
+      }
+      /* accent glows — follow the chosen accent color */
+      .btn-primary:hover {
+        box-shadow: 0 14px 32px var(--glow);
+      }
+      .feature-icon {
+        box-shadow: 0 10px 24px var(--glow);
+      }
+      .point-ic {
+        box-shadow: 0 8px 18px var(--glow);
+      }
+      .flow-num {
+        box-shadow: 0 6px 14px var(--glow);
+      }
+      .role-ic {
+        box-shadow: 0 10px 24px
+          color-mix(in srgb, var(--rc, var(--pink)) 42%, transparent);
+      }
+      .progress-bottom {
+        box-shadow: 0 0 12px var(--glow);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: color-mix(in srgb, var(--pink) 45%, transparent);
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--pink);
+      }
+      .gallery-overlay {
+        background: linear-gradient(
+          to top,
+          color-mix(in srgb, var(--pink) 85%, transparent),
+          transparent 55%
+        );
+      }
     </style>
   </head>
   <body class="dark-theme lang-ar">
@@ -1316,10 +1518,11 @@
               <i class="fas fa-bolt"></i
               ><span data-i18n="hero_badge">الإصدار 1.0.0 Beta</span>
             </div>
-            <h1 class="text-6xl md:text-7xl font-black mb-3">
+            <h1 class="text-6xl md:text-7xl font-black mb-1">
               <span class="logo-bab">bab</span><span class="logo-com">com</span
               ><span class="gradient-text"> Shift</span>
             </h1>
+            <svg class="swoosh mb-3" viewBox="0 0 200 26" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6,7 Q100,33 194,7" /></svg>
             <p
               class="text-lg mb-9"
               style="color: var(--text-soft)"
@@ -1394,12 +1597,13 @@
             <i class="fas fa-bolt"></i
             ><span data-i18n="hero_badge">الإصدار 1.0.0 Beta</span>
           </div>
-          <h1 class="text-7xl md:text-9xl font-black mb-6 anim">
+          <h1 class="text-7xl md:text-9xl font-black mb-2 anim">
             <span class="logo-bab">bab</span><span class="logo-com">com</span
             ><span class="block text-5xl md:text-7xl mt-4 gradient-text"
               >Shift</span
             >
           </h1>
+          <svg class="swoosh mb-6 anim" viewBox="0 0 200 26" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6,7 Q100,33 194,7" /></svg>
           <p class="text-2xl md:text-3xl mb-3 anim" data-i18n="hero_tagline">
             نظام إدارة الورديات الذكي
           </p>
@@ -1457,22 +1661,42 @@
               </p>
             </div>
           </div>
-          <div class="flex flex-col sm:flex-row gap-4 justify-center anim">
+          <div
+            class="flex flex-col sm:flex-row flex-wrap gap-4 justify-center anim"
+          >
             <a
               href="https://shift.up.railway.app/"
               target="_blank"
               rel="noopener"
-              class="btn-primary px-8 py-4 rounded-xl font-bold flex items-center gap-3 text-lg"
+              class="btn-primary px-8 py-4 rounded-xl font-bold flex items-center justify-center gap-3 text-lg"
               ><i class="fas fa-globe"></i
               ><span data-i18n="btn_visit">زيارة الموقع</span></a
             >
             <a
-              href="https://play.google.com/apps/internaltest/4701378041082003688"
+              href="https://play.google.com/store/apps/details?id=com.abedalla.shiftmobile"
               target="_blank"
               rel="noopener"
-              class="btn-ghost px-8 py-4 rounded-xl font-bold flex items-center gap-3 text-lg"
-              ><i class="fab fa-android"></i
-              ><span data-i18n="btn_android">تطبيق Android</span></a
+              class="btn-ghost px-8 py-4 rounded-xl font-bold flex items-center justify-center gap-3 text-lg"
+              ><i class="fab fa-google-play"></i
+              ><span data-i18n="btn_android">Google Play</span></a
+            >
+            <span
+              class="btn-ios px-8 py-4 rounded-xl font-bold flex items-center justify-center gap-3 text-lg"
+              ><i class="fab fa-apple"></i
+              ><span data-i18n="btn_ios">iOS — قيد التطوير</span></span
+            >
+          </div>
+          <div class="mt-4 text-sm anim" style="color: var(--text-soft)">
+            <i class="fas fa-flask" style="color: var(--pink)"></i>
+            <span data-i18n="btn_beta_pre">مختبِر تجريبي؟</span>
+            <a
+              href="https://play.google.com/apps/testing/com.abedalla.shiftmobile"
+              target="_blank"
+              rel="noopener"
+              class="font-bold"
+              style="color: var(--pink)"
+              data-i18n="btn_beta"
+              >انضم للنسخة التجريبية</a
             >
           </div>
         </div>
@@ -2462,7 +2686,9 @@
               <span class="logo-bab">bab</span><span class="logo-com">com</span
               ><span class="gradient-text"> Shift</span>
             </h3>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+            <div
+              class="flex flex-col sm:flex-row flex-wrap gap-4 justify-center mb-4"
+            >
               <a
                 href="https://shift.up.railway.app/"
                 target="_blank"
@@ -2472,12 +2698,30 @@
                 ><span data-i18n="btn_visit">زيارة الموقع</span></a
               >
               <a
-                href="https://play.google.com/apps/internaltest/4701378041082003688"
+                href="https://play.google.com/store/apps/details?id=com.abedalla.shiftmobile"
                 target="_blank"
                 rel="noopener"
                 class="btn-ghost px-8 py-4 rounded-xl font-bold flex items-center justify-center gap-3 text-lg"
-                ><i class="fab fa-android"></i
-                ><span data-i18n="btn_android">تطبيق Android</span></a
+                ><i class="fab fa-google-play"></i
+                ><span data-i18n="btn_android">Google Play</span></a
+              >
+              <span
+                class="btn-ios px-8 py-4 rounded-xl font-bold flex items-center justify-center gap-3 text-lg"
+                ><i class="fab fa-apple"></i
+                ><span data-i18n="btn_ios">iOS — قيد التطوير</span></span
+              >
+            </div>
+            <div class="mb-8 text-sm" style="color: var(--text-soft)">
+              <i class="fas fa-flask" style="color: var(--pink)"></i>
+              <span data-i18n="btn_beta_pre">مختبِر تجريبي؟</span>
+              <a
+                href="https://play.google.com/apps/testing/com.abedalla.shiftmobile"
+                target="_blank"
+                rel="noopener"
+                class="font-bold"
+                style="color: var(--pink)"
+                data-i18n="btn_beta"
+                >انضم للنسخة التجريبية</a
               >
             </div>
             <div
@@ -2708,7 +2952,10 @@
           hero_f3: "موقع + تطبيق",
           hero_f3d: "Web · Android · iOS",
           btn_visit: "زيارة الموقع",
-          btn_android: "تطبيق Android",
+          btn_android: "Google Play",
+          btn_ios: "iOS — قيد التطوير",
+          btn_beta: "انضم للنسخة التجريبية",
+          btn_beta_pre: "مختبِر تجريبي؟",
           p1_badge: "المشكلة الأولى",
           p1_title: "كل يوم في مجموعة الواتساب",
           p1_sub: "عشرات الرسائل يومياً... وكل رسالة وراءها قصة",
@@ -2848,7 +3095,10 @@
           hero_f3: "אתר + אפליקציה",
           hero_f3d: "Web · Android · iOS",
           btn_visit: "לאתר",
-          btn_android: "אפליקציית Android",
+          btn_android: "Google Play",
+          btn_ios: "iOS — בפיתוח",
+          btn_beta: "הצטרפו לגרסת הבטא",
+          btn_beta_pre: "בודקי בטא?",
           p1_badge: "בעיה ראשונה",
           p1_title: "כל יום בקבוצת הוואטסאפ",
           p1_sub: "עשרות הודעות בכל יום — ומאחורי כל אחת יש סיפור",
@@ -2988,7 +3238,10 @@
           hero_f3: "Web + app",
           hero_f3d: "Web · Android · iOS",
           btn_visit: "Visit site",
-          btn_android: "Android app",
+          btn_android: "Google Play",
+          btn_ios: "iOS — in development",
+          btn_beta: "Join the beta",
+          btn_beta_pre: "Beta tester?",
           p1_badge: "Problem #1",
           p1_title: "Every day in the WhatsApp group",
           p1_sub: "Dozens of messages a day — each one hides a story",
@@ -4830,7 +5083,21 @@
       );
 
       /* ==================== INIT ==================== */
+      /* keep --vh in sync with the *visible* viewport (mobile URL-bar fix) */
+      function setVH() {
+        document.documentElement.style.setProperty(
+          "--vh",
+          window.innerHeight * 0.01 + "px",
+        );
+      }
+      setVH();
+      window.addEventListener("resize", setVH);
+      window.addEventListener("orientationchange", setVH);
+      if (window.visualViewport)
+        window.visualViewport.addEventListener("resize", setVH);
+
       document.addEventListener("DOMContentLoaded", () => {
+        setVH();
         let sl = "ar",
           st = "dark",
           sm = "0",
