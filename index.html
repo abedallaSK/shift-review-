@@ -1598,8 +1598,9 @@
             </p>
           </div>
           <div class="grid lg:grid-cols-2 gap-10 items-start">
-            <div class="anim order-2 lg:order-1">
-              <div class="wa max-w-md mx-auto">
+            <div class="anim order-2 lg:order-1 space-y-6">
+              <!-- Chat 1: With Shady -->
+              <div class="wa max-w-md mx-auto" id="storyChat1">
                 <div class="wa-header">
                   <div
                     class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center font-bold"
@@ -1607,20 +1608,59 @@
                     ش
                   </div>
                   <div class="flex-1">
-                    <div class="font-bold" id="storyChatHeaderName" data-i18n="story_me">
-                      شادي (المسؤول)
-                    </div>
-                    <div
-                      class="text-xs opacity-80"
-                      id="storyStatus"
-                      data-i18n="story_online"
-                    >
-                      متصل الآن
-                    </div>
+                    <div class="font-bold">شادي (المسؤول)</div>
+                    <div class="text-xs opacity-80">متصل الآن</div>
                   </div>
                   <i class="fas fa-phone opacity-80"></i>
                 </div>
-                <div class="wa-body" id="storyChat"></div>
+                <div class="wa-body" id="storyChat1Body"></div>
+              </div>
+              <!-- Chat 2: Group Chat -->
+              <div class="wa max-w-md mx-auto hidden" id="storyChat2">
+                <div class="wa-header">
+                  <div
+                    class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center"
+                  >
+                    <i class="fas fa-users"></i>
+                  </div>
+                  <div class="flex-1">
+                    <div class="font-bold">مجموعة الورديات</div>
+                    <div class="text-xs opacity-80">120 عضو</div>
+                  </div>
+                  <i class="fas fa-ellipsis-vertical opacity-80"></i>
+                </div>
+                <div class="wa-body" id="storyChat2Body"></div>
+              </div>
+              <!-- Chat 3: Unknown Number -->
+              <div class="wa max-w-md mx-auto hidden" id="storyChat3">
+                <div class="wa-header">
+                  <div
+                    class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center font-bold"
+                  >
+                    ؟
+                  </div>
+                  <div class="flex-1">
+                    <div class="font-bold">رقم غير معروف</div>
+                    <div class="text-xs opacity-80"></div>
+                  </div>
+                  <i class="fas fa-phone opacity-80"></i>
+                </div>
+                <div class="wa-body" id="storyChat3Body"></div>
+              </div>
+              <!-- Call Screen -->
+              <div class="wa max-w-md mx-auto hidden" id="storyCall">
+                <div class="wa-header bg-red-600">
+                  <div
+                    class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center"
+                  >
+                    <i class="fas fa-phone-volume"></i>
+                  </div>
+                  <div class="flex-1">
+                    <div class="font-bold">مسؤول الوردية</div>
+                    <div class="text-xs opacity-80">جاري الاتصال...</div>
+                  </div>
+                </div>
+                <div class="wa-body" id="storyCallBody"></div>
               </div>
               <button
                 class="btn-ghost mt-5 px-6 py-3 rounded-xl font-bold flex items-center gap-2 mx-auto"
@@ -3164,60 +3204,60 @@
         ],
       };
       /* dir: out = me sending, in = incoming */
-            const STORY_MSGS = {
+      const STORY_MSGS = {
         ar: [
           // Chat 1: With Shady (Manager)
-          { d: "out", t: "مرحبا شادي، بتفحصلي إذا في حدا يبدلني الأحد؟ بعطي 8-17 وآخذ 15-24" },
-          { d: "in", t: "تمام، بنزّلها بالجروب 👍" },
+          { chat: 1, d: "out", t: "مرحبا شادي، بتفحصلي إذا في حدا يبدلني الأحد؟ بعطي 8-17 وآخذ 15-24" },
+          { chat: 1, d: "in", t: "تمام، بنزّلها بالجروب 👍" },
           // Close chat 1, open chat 2
-          { d: "newchat", name: "مجموعة الورديات", count: "120 عضو" },
+          { chat: 2, d: "newchat", name: "مجموعة الورديات", count: "120 عضو" },
           // Chat 2: Group chat - Yousef responds
-          { d: "in", t: "أنا يوسف — بقدر أبدل معك 🙌" },
-          { d: "out", t: "ممتاز! اتفقنا ✅" },
+          { chat: 2, d: "in", t: "أنا يوسف — بقدر أبدل معك 🙌" },
+          { chat: 2, d: "out", t: "ممتاز! اتفقنا ✅" },
           // Close chat 2, open chat 3
-          { d: "newchat", name: "رقم غير معروف", count: "" },
+          { chat: 3, d: "newchat", name: "رقم غير معروف", count: "" },
           // Chat 3: Unknown number
-          { d: "in", t: "مرحبا عبدالله، بتحب تبدّل الأحد؟" },
-          { d: "out", t: "الصراحة بدّلت مع يوسف 🙂" },
+          { chat: 3, d: "in", t: "مرحبا عبدالله، بتحب تبدّل الأحد؟" },
+          { chat: 3, d: "out", t: "الصراحة بدّلت مع يوسف 🙂" },
           // Close chat 3, open call
-          { d: "call", t: "☎️ الأحد 08:00 — مسؤول الوردية: وينك؟! ليش ما إجيت؟" },
-          { d: "out", t: "أنا بدّلت مع يوسف! بشتغل من الساعة 3 😳" },
+          { chat: 4, d: "call", t: "☎️ الأحد 08:00 — مسؤول الوردية: وينك؟! ليش ما إجيت؟" },
+          { chat: 4, d: "out", t: "أنا بدّلت مع يوسف! بشتغل من الساعة 3 😳" },
         ],
         he: [
           // Chat 1: With Shady (Manager)
-          { d: "out", t: "היי שאדי, תבדוק אם מישהו יכול להחליף אותי ביום ראשון? נותן 8-17 ולוקח 15-24" },
-          { d: "in", t: "סבבה, מעלה לקבוצה 👍" },
+          { chat: 1, d: "out", t: "היי שאדי, תבדוק אם מישהו יכול להחליף אותי ביום ראשון? נותן 8-17 ולוקח 15-24" },
+          { chat: 1, d: "in", t: "סבבה, מעלה לקבוצה 👍" },
           // Close chat 1, open chat 2
-          { d: "newchat", name: "קבוצת משמרות", count: "120 חברים" },
+          { chat: 2, d: "newchat", name: "קבוצת משמרות", count: "120 חברים" },
           // Chat 2: Group chat - Yousef responds
-          { d: "in", t: "אני יוסף — אני יכול להחליף איתך 🙌" },
-          { d: "out", t: "מעולה! סגור ✅" },
+          { chat: 2, d: "in", t: "אני יוסף — אני יכול להחליף איתך 🙌" },
+          { chat: 2, d: "out", t: "מעולה! סגור ✅" },
           // Close chat 2, open chat 3
-          { d: "newchat", name: "מספר לא מוכר", count: "" },
+          { chat: 3, d: "newchat", name: "מספר לא מוכר", count: "" },
           // Chat 3: Unknown number
-          { d: "in", t: "היי עבדאללה, רוצה להחליף ביום ראשון?" },
-          { d: "out", t: "בעצם כבר החלפתי עם יוסף 🙂" },
+          { chat: 3, d: "in", t: "היי עבדאללה, רוצה להחליף ביום ראשון?" },
+          { chat: 3, d: "out", t: "בעצם כבר החלפתי עם יוסף 🙂" },
           // Close chat 3, open call
-          { d: "call", t: "☎️ ראשון 08:00 — אחראי המשמרת: איפה אתה?! למה לא הגעת?" },
-          { d: "out", t: "החלפתי עם יוסף! אני עובד מ־3 😳" },
+          { chat: 4, d: "call", t: "☎️ ראשון 08:00 — אחראי המשמרת: איפה אתה?! למה לא הגעת?" },
+          { chat: 4, d: "out", t: "החלפתי עם יוסף! אני עובד מ־3 😳" },
         ],
         en: [
           // Chat 1: With Shady (Manager)
-          { d: "out", t: "Hi Shady, can you check if someone can cover my Sunday? I give 8-17 and take 15-24" },
-          { d: "in", t: "Sure, posting it to the group 👍" },
+          { chat: 1, d: "out", t: "Hi Shady, can you check if someone can cover my Sunday? I give 8-17 and take 15-24" },
+          { chat: 1, d: "in", t: "Sure, posting it to the group 👍" },
           // Close chat 1, open chat 2
-          { d: "newchat", name: "Shifts Group", count: "120 members" },
+          { chat: 2, d: "newchat", name: "Shifts Group", count: "120 members" },
           // Chat 2: Group chat - Yousef responds
-          { d: "in", t: "I'm Yousef — I can swap with you 🙌" },
-          { d: "out", t: "Great! Deal ✅" },
+          { chat: 2, d: "in", t: "I'm Yousef — I can swap with you 🙌" },
+          { chat: 2, d: "out", t: "Great! Deal ✅" },
           // Close chat 2, open chat 3
-          { d: "newchat", name: "Unknown Number", count: "" },
+          { chat: 3, d: "newchat", name: "Unknown Number", count: "" },
           // Chat 3: Unknown number
-          { d: "in", t: "Hi Abdullah, want to swap this Sunday?" },
-          { d: "out", t: "Actually I already swapped with Yousef 🙂" },
+          { chat: 3, d: "in", t: "Hi Abdullah, want to swap this Sunday?" },
+          { chat: 3, d: "out", t: "Actually I already swapped with Yousef 🙂" },
           // Close chat 3, open call
-          { d: "call", t: "☎️ Sunday 08:00 — shift manager: Where are you?! Why didn't you come?" },
-          { d: "out", t: "I swapped with Yousef! I work from 3 😳" },
+          { chat: 4, d: "call", t: "☎️ Sunday 08:00 — shift manager: Where are you?! Why didn't you come?" },
+          { chat: 4, d: "out", t: "I swapped with Yousef! I work from 3 😳" },
         ],
       };
 
@@ -4580,36 +4620,60 @@
         });
       }
       function playStory() {
-        const chat = document.getElementById("storyChat");
-        const headerName = document.querySelector("#storyChatHeaderName");
-        const headerStatus = document.getElementById("storyStatus");
-        if (!chat) return;
-        clearTimers(storyTimers);
-        chat.innerHTML = "";
+        // Get all chat containers
+        const chat1 = document.getElementById("storyChat1");
+        const chat2 = document.getElementById("storyChat2");
+        const chat3 = document.getElementById("storyChat3");
+        const callScreen = document.getElementById("storyCall");
+        const chat1Body = document.getElementById("storyChat1Body");
+        const chat2Body = document.getElementById("storyChat2Body");
+        const chat3Body = document.getElementById("storyChat3Body");
+        const callBody = document.getElementById("storyCallBody");
         
-        // Default header (Abdullah chat with Shady)
-        let currentHeaderName = "شادي (المسؤول)";
-        let currentHeaderStatus = "متصل الآن";
-        if (currentLang === "he") {
-          currentHeaderName = "שאדי (אחראי)";
-          currentHeaderStatus = "מחובר עכשיו";
-        } else if (currentLang === "en") {
-          currentHeaderName = "Shady (Manager)";
-          currentHeaderStatus = "online";
-        }
+        if (!chat1Body) return;
+        
+        clearTimers(storyTimers);
+        
+        // Hide all chats initially, then show chat1
+        [chat1, chat2, chat3, callScreen].forEach(el => {
+          if (el) el.classList.add("hidden");
+        });
+        chat1.classList.remove("hidden");
+        
+        // Clear all bodies
+        [chat1Body, chat2Body, chat3Body, callBody].forEach(el => {
+          if (el) el.innerHTML = "";
+        });
         
         const msgs = STORY_MSGS[currentLang] || STORY_MSGS.ar;
         let delay = 400;
+        
         msgs.forEach((m) => {
           storyTimers.push(
             setTimeout(() => {
+              // Handle newchat - switch between different chat windows
               if (m.d === "newchat") {
-                // Update header to show new chat
-                if (headerName) headerName.textContent = m.name;
-                if (headerStatus && m.count) headerStatus.textContent = m.count;
-                else if (headerStatus) headerStatus.textContent = "";
+                // Hide all first
+                [chat1, chat2, chat3, callScreen].forEach(el => {
+                  if (el) el.classList.add("hidden");
+                });
+                
+                // Show the appropriate chat based on m.chat
+                if (m.chat === 2 && chat2) {
+                  chat2.classList.remove("hidden");
+                } else if (m.chat === 3 && chat3) {
+                  chat3.classList.remove("hidden");
+                } else if (m.chat === 4 && callScreen) {
+                  callScreen.classList.remove("hidden");
+                }
                 return;
               }
+              
+              // Determine which chat body to use
+              let targetBody = chat1Body;
+              if (m.chat === 2) targetBody = chat2Body;
+              else if (m.chat === 3) targetBody = chat3Body;
+              else if (m.chat === 4) targetBody = callBody;
               
               const el = document.createElement("div");
               el.className =
@@ -4620,8 +4684,8 @@
                     ? "wa-call"
                     : "wa-in");
               el.innerHTML = `<div>${m.t}</div>`;
-              chat.appendChild(el);
-              chat.scrollTop = chat.scrollHeight;
+              targetBody.appendChild(el);
+              targetBody.scrollTop = targetBody.scrollHeight;
               if (m.d === "out") soundSend();
               else if (m.d === "call") soundCall();
               else soundReceive();
